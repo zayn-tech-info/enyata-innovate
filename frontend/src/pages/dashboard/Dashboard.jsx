@@ -11,6 +11,8 @@ import {
   HiCurrencyDollar,
   HiCalendar,
 } from "react-icons/hi";
+import { toast } from "react-toastify";
+import Loading from "../../components/common/Loading";
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -46,7 +48,9 @@ export default function Dashboard() {
 
   if (loading)
     return (
-      <p className="text-center mt-20 text-gray-700">Loading dashboard...</p>
+      <div className="min-h-screen p-6 bg-linear-to-br from-purple-400 to-pink-500">
+        <Loading />
+      </div>
     );
 
   return (
@@ -110,7 +114,10 @@ export default function Dashboard() {
           </button>
 
           <button
-            onClick={() => navigate("/circles")}
+            onClick={() => {
+              navigate("/circles");
+              toast.success("Success");
+            }}
             className="flex items-center gap-2 bg-pink-100 text-pink-500 px-4 py-2 rounded-lg hover:bg-pink-200 transition font-semibold"
           >
             <HiClipboardList /> View Circles
