@@ -1,4 +1,72 @@
 @import "tailwindcss";
+
+@theme {
+  /* =========================
+     BREAKPOINTS
+     ========================= */
+  --breakpoint-3xl: 120rem;
+
+  /* =========================
+     BRAND COLORS
+     ========================= */
+  --color-brand-primary-500: oklch(0.65 0.22 340);
+  --color-brand-primary-600: oklch(0.58 0.24 340);
+
+  --color-brand-secondary-500: oklch(0.7 0.16 300);
+  --color-brand-secondary-600: oklch(0.64 0.18 300);
+
+  --color-brand-hover: oklch(0.6 0.22 340);
+  --color-brand-active: oklch(0.55 0.24 340);
+
+  --glass-blur: blur(10px);
+  --glass-border: oklch(1 0 0 / 0.2);
+
+  /* =========================
+     BACKGROUND
+     ========================= */
+  --color-bg-base: oklch(0.97 0.01 260);
+  --color-bg-card: oklch(1 0 0);
+  --color-bg-glass: oklch(1 0 0 / 0.1);
+
+  /* =========================
+     TEXT
+     ========================= */
+  --color-text-primary: oklch(0.2 0.02 260);
+  --color-text-secondary: oklch(0.45 0.02 260);
+  --color-text-muted: oklch(0.65 0.01 260);
+  --color-text-white: oklch(1 0 0);
+
+  /* =========================
+     STATUS COLORS
+     ========================= */
+  --color-success-500: oklch(0.68 0.2 150);
+  --color-success-600: oklch(0.6 0.22 150);
+  --color-error-500: oklch(0.65 0.22 25);
+  --color-warning-500: oklch(0.8 0.18 85);
+  --color-info-500: oklch(0.7 0.14 250);
+
+  /* =========================
+     BORDER / EFFECTS
+     ========================= */
+  --color-border-light: oklch(0.9 0.01 260);
+
+  --shadow-soft: 0 10px 25px rgba(0, 0, 0, 0.08);
+  --shadow-card: 0 6px 20px rgba(0, 0, 0, 0.06);
+  --shadow-pop: 0 12px 30px rgba(0, 0, 0, 0.12);
+
+  /* =========================
+     FONTS
+     ========================= */
+  --font-sans:
+    ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji",
+    "Segoe UI Symbol", "Noto Color Emoji";
+
+  --font-serif: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+
+  --font-mono:
+    ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
+    "Courier New", monospace;
+}
 /* :root {
   --text: #6b6375;
   --text-h: #08060d;

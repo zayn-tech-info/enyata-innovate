@@ -54,7 +54,7 @@ export default function Dashboard() {
     );
 
   return (
-    <div className="min-h-screen p-6 bg-linear-to-br from-purple-400 to-pink-500 text-gray-800">
+    <div className="min-h-screen p-6 bg-linear-to-br from-brand-secondary-500 to-brand-primary-500 text-primary-500">
       {/* Header */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
         <div>
