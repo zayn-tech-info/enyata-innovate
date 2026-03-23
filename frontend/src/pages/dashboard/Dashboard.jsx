@@ -1,23 +1,19 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { getCircles } from "../../api/circles.api";
 import { getEvents } from "../../api/events.api";
 import { useAuthStore } from "../../store/auth.store";
 import {
   HiPlus,
-  HiClipboardList,
-  HiLogout,
   HiUsers,
   HiCurrencyDollar,
   HiCalendar,
+  HiArrowRight,
 } from "react-icons/hi";
-import { toast } from "react-toastify";
 import Loading from "../../components/common/Loading";
 
 export default function Dashboard() {
-  const navigate = useNavigate();
-  const { user, logout } = useAuthStore();
-
+  const { user } = useAuthStore();
   const [circles, setCircles] = useState([]);
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -29,8 +25,8 @@ export default function Dashboard() {
           getCircles(),
           getEvents(),
         ]);
-        setCircles(circlesRes.data ?? []);
-        setEvents(eventsRes.data ?? []);
+        setCircles(Array.isArray(circlesRes.data) ? circlesRes.data : []);
+        setEvents(Array.isArray(eventsRes.data) ? eventsRes.data : []);
       } catch (err) {
         console.error("Dashboard load error:", err);
       } finally {
@@ -42,134 +38,185 @@ export default function Dashboard() {
 
   const totalBalance = circles.reduce(
     (sum, c) => sum + (c.escrowBalance || 0),
-    0,
+    0
   );
-  const recentEvents = events.slice(0, 5);
+  
+  // Filter active events properly if possible, or just take recent
+  const activeEvents = events.filter((e) => e.status === "open");
 
-  if (loading)
-    return (
-      <div className="min-h-screen p-6 bg-linear-to-br from-purple-400 to-pink-500">
-        <Loading />
-      </div>
-    );
+  if (loading) return <Loading />;
 
   return (
-    <div className="min-h-screen p-6 bg-linear-to-br from-purple-400 to-pink-500 text-gray-800">
-      {/* Header */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
+    <div className="space-y-6">
+      {/* Welcome Section */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-2xl font-bold">
-            Welcome, {user?.name || "User"}
-          </h2>
-          <p className="text-gray-700 mt-1">Here’s your activity overview</p>
+          <h1 className="text-2xl font-bold text-gray-900">
+            Welcome back, {user?.name || "Member"}!
+          </h1>
+          <p className="text-gray-500 mt-1">
+            Here’s what’s happening with your circles today.
+          </p>
         </div>
-        <button
-          onClick={logout}
-          className="mt-4 md:mt-0 flex items-center gap-2 bg-white text-pink-500 px-4 py-2 rounded-lg hover:bg-pink-50 transition font-semibold"
+        <Link
+          to="/create-circle"
+          className="inline-flex items-center justify-center px-4 py-2 bg-pink-600 text-white font-medium rounded-lg hover:bg-pink-700 transition-colors shadow-sm"
         >
-          <HiLogout size={20} /> Logout
-        </button>
+          <HiPlus className="w-5 h-5 mr-2" />
+          New Circle
+        </Link>
       </div>
 
-      {/* Summary Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-8">
-        <div className="bg-white p-5 rounded-2xl shadow hover:shadow-lg transition flex items-center gap-3">
-          <HiUsers size={28} className="text-pink-500" />
-          <div>
-            <h4 className="text-gray-700 font-semibold">Total Circles</h4>
-            <p className="text-xl font-bold">{circles.length}</p>
-          </div>
-        </div>
-
-        <div className="bg-white p-5 rounded-2xl shadow hover:shadow-lg transition flex items-center gap-3">
-          <HiCurrencyDollar size={28} className="text-pink-500" />
-          <div>
-            <h4 className="text-gray-700 font-semibold">Total Balance</h4>
-            <p className="text-xl font-bold">
-              ₦{totalBalance.toLocaleString()}
-            </p>
-          </div>
-        </div>
-
-        <div className="bg-white p-5 rounded-2xl shadow hover:shadow-lg transition flex items-center gap-3">
-          <HiCalendar size={28} className="text-pink-500" />
-          <div>
-            <h4 className="text-gray-700 font-semibold">Active Events</h4>
-            <p className="text-xl font-bold">
-              {events.filter((e) => e.status === "open").length}
-            </p>
-          </div>
-        </div>
+      {/* Metrics Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+        <MetricCard
+          title="Total Balance"
+          value={`₦${totalBalance.toLocaleString()}`}
+          icon={HiCurrencyDollar}
+          color="text-green-600"
+          bg="bg-green-50"
+        />
+        <MetricCard
+          title="Active Circles"
+          value={circles.length}
+          icon={HiUsers}
+          color="text-purple-600"
+          bg="bg-purple-50"
+        />
+        <MetricCard
+          title="Pending Events"
+          value={activeEvents.length}
+          icon={HiCalendar}
+          color="text-orange-600"
+          bg="bg-orange-50"
+        />
       </div>
 
-      {/* Quick Actions */}
-      <div className="mb-8">
-        <h3 className="text-lg font-semibold mb-3">Quick Actions</h3>
-        <div className="flex flex-wrap gap-4">
-          <button
-            onClick={() => navigate("/create-circle")}
-            className="flex items-center gap-2 bg-pink-500 text-white px-4 py-2 rounded-lg hover:bg-pink-600 transition font-semibold"
-          >
-            <HiPlus /> Create Circle
-          </button>
-
-          <button
-            onClick={() => {
-              navigate("/circles");
-              toast.success("Success");
-            }}
-            className="flex items-center gap-2 bg-pink-100 text-pink-500 px-4 py-2 rounded-lg hover:bg-pink-200 transition font-semibold"
-          >
-            <HiClipboardList /> View Circles
-          </button>
-        </div>
-      </div>
-
-      {/* Circles List */}
-      <div className="mb-8">
-        <h3 className="text-lg font-semibold mb-3">Your Circles</h3>
-        {circles.length === 0 ? (
-          <p>No circles yet</p>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {circles.map((circle) => (
-              <div
-                key={circle._id}
-                onClick={() => navigate(`/circles/${circle._id}`)}
-                className="bg-white p-4 rounded-xl shadow hover:shadow-lg cursor-pointer transition"
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Recent Circles */}
+        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-lg font-bold text-gray-900">Your Circles</h2>
+            <Link
+              to="/circles"
+              className="text-sm font-medium text-pink-600 hover:text-pink-700 flex items-center"
+            >
+              View All <HiArrowRight className="w-4 h-4 ml-1" />
+            </Link>
+          </div>
+          
+          {circles.length === 0 ? (
+            <div className="text-center py-8 bg-gray-50 rounded-lg">
+              <p className="text-gray-500">You haven't joined any circles yet.</p>
+              <Link
+                to="/create-circle"
+                className="text-pink-600 font-medium mt-2 inline-block hover:underline"
               >
-                <h4 className="font-semibold text-gray-800">{circle.name}</h4>
-                <p className="text-pink-500 font-bold mt-1">
-                  ₦{circle.escrowBalance?.toLocaleString() || 0}
-                </p>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
+                Create one now
+              </Link>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {circles.slice(0, 3).map((circle) => (
+                <Link
+                  key={circle._id}
+                  to={`/circles/${circle._id}`}
+                  className="block p-4 rounded-lg border border-gray-100 hover:border-pink-200 hover:bg-pink-50/30 transition-colors group bg-white"
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-full bg-purple-100 text-purple-600 flex items-center justify-center font-bold text-lg">
+                        {circle.name.charAt(0)}
+                      </div>
+                      <div>
+                        <h3 className="font-semibold text-gray-900 group-hover:text-pink-700 transition-colors">
+                          {circle.name}
+                        </h3>
+                        <p className="text-xs text-gray-500">
+                          {circle.membersCount || 1} members
+                        </p>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <p className="font-bold text-gray-900">
+                        ₦{circle.escrowBalance?.toLocaleString() || 0}
+                      </p>
+                      <p className="text-xs text-gray-500 capitalize">
+                        {circle.type}
+                      </p>
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          )}
+        </div>
 
-      {/* Recent Events */}
+        {/* Active Events */}
+        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-lg font-bold text-gray-900">Active Events</h2>
+          </div>
+          {activeEvents.length === 0 ? (
+            <div className="text-center py-8 bg-gray-50 rounded-lg">
+              <p className="text-gray-500">No active events at the moment.</p>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {activeEvents.slice(0, 3).map((event) => {
+                const percent = Math.min(
+                    ((event.collectedAmount || 0) /
+                      (event.targetAmount || 1)) *
+                      100,
+                    100
+                  );
+                return (
+                <Link
+                  key={event._id}
+                  to={`/events/${event._id}`}
+                  className="block p-4 rounded-lg border border-gray-100 hover:border-pink-200 hover:bg-pink-50/30 transition-colors bg-white"
+                >
+                  <div className="flex justify-between items-start mb-2">
+                    <h3 className="font-medium text-gray-900 truncate pr-2">{event.title}</h3>
+                    <span className={`px-2 py-1 text-xs font-medium rounded-full capitalize ${
+                        event.status === 'open' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700'
+                    }`}>
+                      {event.status}
+                    </span>
+                  </div>
+                  <div className="w-full bg-gray-200 rounded-full h-1.5 mb-2">
+                    <div
+                      className="bg-pink-500 h-1.5 rounded-full"
+                      style={{ width: `${percent}%` }}
+                    />
+                  </div>
+                  <div className="flex justify-between text-xs text-gray-500">
+                    <span>
+                      Raised: ₦{event.collectedAmount?.toLocaleString() || 0}
+                    </span>
+                    <span>
+                      Goal: ₦{event.targetAmount?.toLocaleString() || 0}
+                    </span>
+                  </div>
+                </Link>
+              )})}
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function MetricCard({ title, value, icon: Icon, color, bg }) {
+  return (
+    <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex items-center gap-4 transition-transform hover:-translate-y-1 duration-200">
+      <div className={`p-4 rounded-full ${bg} ${color}`}>
+        <Icon size={24} />
+      </div>
       <div>
-        <h3 className="text-lg font-semibold mb-3">Recent Events</h3>
-        {recentEvents.length === 0 ? (
-          <p>No events yet</p>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {recentEvents.map((event) => (
-              <div
-                key={event._id}
-                onClick={() => navigate(`/events/${event._id}`)}
-                className="bg-white p-4 rounded-xl shadow hover:shadow-lg cursor-pointer transition"
-              >
-                <h4 className="font-semibold text-gray-800">{event.title}</h4>
-                <p className="text-pink-500 font-bold mt-1">
-                  ₦{event.collectedAmount} / ₦{event.targetAmount}
-                </p>
-                <small className="text-gray-600">Status: {event.status}</small>
-              </div>
-            ))}
-          </div>
-        )}
+        <p className="text-sm font-medium text-gray-500">{title}</p>
+        <p className="text-2xl font-bold text-gray-900 mt-1">{value}</p>
       </div>
     </div>
   );

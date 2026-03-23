@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Login from "../pages/auth/Login";
 import Register from "../pages/auth/Register";
 import Dashboard from "../pages/dashboard/Dashboard";
@@ -8,6 +8,7 @@ import CreateCircle from "../pages/circles/CreateCircle";
 import EventDetail from "../pages/events/EventDetail";
 import Contribute from "../pages/contribute/Contribute";
 import ProtectedRoute from "./ProtectedRoute";
+import Layout from "../components/common/Layout";
 
 export default function AppRouter() {
   return (
@@ -17,58 +18,21 @@ export default function AppRouter() {
         <Route path="/register" element={<Register />} />
 
         <Route
-          path="/"
           element={
             <ProtectedRoute>
-              <Dashboard />
+              <Layout />
             </ProtectedRoute>
           }
-        />
+        >
+          <Route path="/" element={<Dashboard />} />
+          <Route path="/circles" element={<Circles />} />
+          <Route path="/circles/:id" element={<CircleDetail />} />
+          <Route path="/create-circle" element={<CreateCircle />} />
+          <Route path="/events/:id" element={<EventDetail />} />
+          <Route path="/contribute/:eventId" element={<Contribute />} />
+        </Route>
 
-        <Route
-          path="/circles"
-          element={
-            <ProtectedRoute>
-              <Circles />
-            </ProtectedRoute>
-          }
-        />
-
-        <Route
-          path="/circles/:id"
-          element={
-            <ProtectedRoute>
-              <CircleDetail />
-            </ProtectedRoute>
-          }
-        />
-
-        <Route
-          path="/create-circle"
-          element={
-            <ProtectedRoute>
-              <CreateCircle />
-            </ProtectedRoute>
-          }
-        />
-
-        <Route
-          path="/events/:id"
-          element={
-            <ProtectedRoute>
-              <EventDetail />
-            </ProtectedRoute>
-          }
-        />
-
-        <Route
-          path="/contribute/:eventId"
-          element={
-            <ProtectedRoute>
-              <Contribute />
-            </ProtectedRoute>
-          }
-        />
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>
   );
