@@ -12,8 +12,6 @@ export const useAuthStore = create((set) => ({
 
     if (token) {
       set({ token });
-      // optionally fetch user here
-      // await fetchUser()
     }
 
     set({ isLoading: false });

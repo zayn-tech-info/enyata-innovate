@@ -13,7 +13,7 @@ import {
 import Loading from "../../components/common/Loading";
 
 export default function Dashboard() {
-  const { user } = useAuthStore();
+  const user = useAuthStore((s) => s.user);
   const [circles, setCircles] = useState([]);
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);

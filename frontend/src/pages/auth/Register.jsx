@@ -39,9 +39,8 @@ export default function Register() {
     try {
       const res = await register(form);
       setAuth(res);
-      navigate("/");
+      navigate("/login");
     } catch (err) {
-      console.error(err);
       setError(err.response?.data?.message || "Registration failed. Please try again.");
     } finally {
       setLoading(false);
