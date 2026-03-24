@@ -1,176 +1,218 @@
-import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { getCircles } from "../../api/circles.api";
-import { getEvents } from "../../api/events.api";
-import { useAuthStore } from "../../store/auth.store";
-import {
-  HiPlus,
-  HiClipboardList,
-  HiLogout,
-  HiUsers,
-  HiCurrencyDollar,
-  HiCalendar,
-} from "react-icons/hi";
-import { toast } from "react-toastify";
-import Loading from "../../components/common/Loading";
+// import { useEffect, useState } from "react";
+// import { useNavigate, Link } from "react-router-dom";
+// import axios from "axios";
+// import { useAuthStore } from "../../store/auth.store";
 
-export default function Dashboard() {
-  const navigate = useNavigate();
-  const { user, logout } = useAuthStore();
+// const API = import.meta.env.VITE_API_BASE_URL;
+// const token = () => localStorage.getItem("token");
 
-  const [circles, setCircles] = useState([]);
-  const [events, setEvents] = useState([]);
-  const [loading, setLoading] = useState(true);
+// export default function Dashboard() {
+//   const navigate = useNavigate();
+//   const user = useAuthStore((s) => s.user);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const [circlesRes, eventsRes] = await Promise.all([
-          getCircles(),
-          getEvents(),
-        ]);
-        setCircles(circlesRes.data ?? []);
-        setEvents(eventsRes.data ?? []);
-      } catch (err) {
-        console.error("Dashboard load error:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchData();
-  }, []);
+//   const [circles, setCircles] = useState([]);
+//   const [events, setEvents] = useState([]);
+//   const [loading, setLoading] = useState(true);
 
-  const totalBalance = circles.reduce(
-    (sum, c) => sum + (c.escrowBalance || 0),
-    0,
-  );
-  const recentEvents = events.slice(0, 5);
+//   useEffect(() => {
+//     async function load() {
+//       try {
+//         const headers = { Authorization: `Bearer ${token()}` };
+//         const [circRes, evRes] = await Promise.all([
+//           axios.get(`${API}/circles`, { headers }),
+//           axios.get(`${API}/events`, { headers }),
+//         ]);
+//         setCircles(circRes.data);
+//         setEvents(evRes.data.filter((e) => e.status === "open").slice(0, 3));
+//       } catch {
+//         // silently fail — partial data is fine
+//       } finally {
+//         setLoading(false);
+//       }
+//     }
+//     load();
+//   }, []);
 
-  if (loading)
-    return (
-      <div className="min-h-screen p-6 bg-linear-to-br from-purple-400 to-pink-500">
-        <Loading />
-      </div>
-    );
+//   const fmt = (n) =>
+//     new Intl.NumberFormat("en-NG", {
+//       style: "currency",
+//       currency: "NGN",
+//       maximumFractionDigits: 0,
+//     }).format(n ?? 0);
 
-  return (
-    <div className="min-h-screen p-6 bg-linear-to-br from-brand-secondary-500 to-brand-primary-500 text-primary-500">
-      {/* Header */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
-        <div>
-          <h2 className="text-2xl font-bold">
-            Welcome, {user?.name || "User"}
-          </h2>
-          <p className="text-gray-700 mt-1">Here’s your activity overview</p>
-        </div>
-        <button
-          onClick={logout}
-          className="mt-4 md:mt-0 flex items-center gap-2 bg-white text-pink-500 px-4 py-2 rounded-lg hover:bg-pink-50 transition font-semibold"
-        >
-          <HiLogout size={20} /> Logout
-        </button>
-      </div>
+//   const totalEscrow = circles.reduce((s, c) => s + (c.escrowBalance ?? 0), 0);
+//   const firstName = user?.name?.split(" ")[0] ?? "there";
 
-      {/* Summary Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-8">
-        <div className="bg-white p-5 rounded-2xl shadow hover:shadow-lg transition flex items-center gap-3">
-          <HiUsers size={28} className="text-pink-500" />
-          <div>
-            <h4 className="text-gray-700 font-semibold">Total Circles</h4>
-            <p className="text-xl font-bold">{circles.length}</p>
-          </div>
-        </div>
+//   return (
+//     <div className="min-h-screen bg-[--color-bg-base] px-4 py-8 pb-24 max-w-2xl mx-auto">
+//       {/* Greeting */}
+//       <div className="mb-8">
+//         <p className="text-[--color-text-muted] text-sm mb-0.5">Good day,</p>
+//         <h1 className="text-[--color-text-primary] text-2xl font-bold tracking-tight">
+//           {firstName} 👋
+//         </h1>
+//       </div>
 
-        <div className="bg-white p-5 rounded-2xl shadow hover:shadow-lg transition flex items-center gap-3">
-          <HiCurrencyDollar size={28} className="text-pink-500" />
-          <div>
-            <h4 className="text-gray-700 font-semibold">Total Balance</h4>
-            <p className="text-xl font-bold">
-              ₦{totalBalance.toLocaleString()}
-            </p>
-          </div>
-        </div>
+//       {/* Stats row */}
+//       <div className="grid grid-cols-2 gap-3 mb-8">
+//         <StatCard
+//           label="Your circles"
+//           value={loading ? "—" : circles.length}
+//           icon="⭕"
+//         />
+//         <StatCard
+//           label="Total in escrow"
+//           value={loading ? "—" : fmt(totalEscrow)}
+//           icon="🔒"
+//           small
+//         />
+//       </div>
 
-        <div className="bg-white p-5 rounded-2xl shadow hover:shadow-lg transition flex items-center gap-3">
-          <HiCalendar size={28} className="text-pink-500" />
-          <div>
-            <h4 className="text-gray-700 font-semibold">Active Events</h4>
-            <p className="text-xl font-bold">
-              {events.filter((e) => e.status === "open").length}
-            </p>
-          </div>
-        </div>
-      </div>
+//       {/* Open events */}
+//       <Section title="Open events" action={{ label: "See all", to: "/events" }}>
+//         {loading ? (
+//           <SkeletonList />
+//         ) : events.length === 0 ? (
+//           <Empty text="No open events right now." />
+//         ) : (
+//           <ul className="space-y-3">
+//             {events.map((ev) => (
+//               <EventRow key={ev._id} event={ev} fmt={fmt} navigate={navigate} />
+//             ))}
+//           </ul>
+//         )}
+//       </Section>
 
-      {/* Quick Actions */}
-      <div className="mb-8">
-        <h3 className="text-lg font-semibold mb-3">Quick Actions</h3>
-        <div className="flex flex-wrap gap-4">
-          <button
-            onClick={() => navigate("/create-circle")}
-            className="flex items-center gap-2 bg-pink-500 text-white px-4 py-2 rounded-lg hover:bg-pink-600 transition font-semibold"
-          >
-            <HiPlus /> Create Circle
-          </button>
+//       {/* Circles */}
+//       <Section
+//         title="My circles"
+//         action={{ label: "Create new", to: "/circles/new" }}
+//       >
+//         {loading ? (
+//           <SkeletonList />
+//         ) : circles.length === 0 ? (
+//           <Empty text="You haven't joined any circles yet.">
+//             <Link
+//               to="/circles/new"
+//               className="mt-3 inline-block px-4 py-2 rounded-xl bg-[--color-brand-primary-500] text-white text-sm font-medium"
+//             >
+//               Create a circle
+//             </Link>
+//           </Empty>
+//         ) : (
+//           <ul className="space-y-3">
+//             {circles.slice(0, 4).map((c) => (
+//               <CircleRow key={c._id} circle={c} fmt={fmt} navigate={navigate} />
+//             ))}
+//           </ul>
+//         )}
+//       </Section>
+//     </div>
+//   );
+// }
 
-          <button
-            onClick={() => {
-              navigate("/circles");
-              toast.success("Success");
-            }}
-            className="flex items-center gap-2 bg-pink-100 text-pink-500 px-4 py-2 rounded-lg hover:bg-pink-200 transition font-semibold"
-          >
-            <HiClipboardList /> View Circles
-          </button>
-        </div>
-      </div>
+// function StatCard({ label, value, icon, small }) {
+//   return (
+//     <div className="bg-[--color-bg-card] rounded-2xl border border-[--color-border-light] shadow-[--shadow-card] p-4">
+//       <span className="text-xl mb-2 block">{icon}</span>
+//       <p
+//         className={`text-[--color-text-primary] font-bold ${small ? "text-lg" : "text-2xl"} tracking-tight`}
+//       >
+//         {value}
+//       </p>
+//       <p className="text-[--color-text-muted] text-xs mt-0.5">{label}</p>
+//     </div>
+//   );
+// }
 
-      {/* Circles List */}
-      <div className="mb-8">
-        <h3 className="text-lg font-semibold mb-3">Your Circles</h3>
-        {circles.length === 0 ? (
-          <p>No circles yet</p>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {circles.map((circle) => (
-              <div
-                key={circle._id}
-                onClick={() => navigate(`/circles/${circle._id}`)}
-                className="bg-white p-4 rounded-xl shadow hover:shadow-lg cursor-pointer transition"
-              >
-                <h4 className="font-semibold text-gray-800">{circle.name}</h4>
-                <p className="text-pink-500 font-bold mt-1">
-                  ₦{circle.escrowBalance?.toLocaleString() || 0}
-                </p>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
+// function Section({ title, action, children }) {
+//   return (
+//     <div className="mb-8">
+//       <div className="flex items-center justify-between mb-3">
+//         <h2 className="text-[--color-text-primary] text-base font-semibold">
+//           {title}
+//         </h2>
+//         {action && (
+//           <Link
+//             to={action.to}
+//             className="text-[--color-brand-primary-500] text-xs font-medium hover:underline"
+//           >
+//             {action.label}
+//           </Link>
+//         )}
+//       </div>
+//       {children}
+//     </div>
+//   );
+// }
 
-      {/* Recent Events */}
-      <div>
-        <h3 className="text-lg font-semibold mb-3">Recent Events</h3>
-        {recentEvents.length === 0 ? (
-          <p>No events yet</p>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {recentEvents.map((event) => (
-              <div
-                key={event._id}
-                onClick={() => navigate(`/events/${event._id}`)}
-                className="bg-white p-4 rounded-xl shadow hover:shadow-lg cursor-pointer transition"
-              >
-                <h4 className="font-semibold text-gray-800">{event.title}</h4>
-                <p className="text-pink-500 font-bold mt-1">
-                  ₦{event.collectedAmount} / ₦{event.targetAmount}
-                </p>
-                <small className="text-gray-600">Status: {event.status}</small>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
-    </div>
-  );
-}
+// function EventRow({ event, fmt, navigate }) {
+//   const progress = Math.min(
+//     (event.collectedAmount / event.targetAmount) * 100,
+//     100,
+//   );
+//   return (
+//     <li
+//       onClick={() => navigate(`/events/${event._id}`)}
+//       className="bg-[--color-bg-card] rounded-xl border border-[--color-border-light] px-4 py-3.5 cursor-pointer hover:shadow-[--shadow-soft] transition-all hover:-translate-y-0.5"
+//     >
+//       <div className="flex items-start justify-between mb-2">
+//         <div>
+//           <p className="text-[--color-text-primary] text-sm font-semibold">
+//             {event.title}
+//           </p>
+//           <p className="text-[--color-text-muted] text-xs mt-0.5 capitalize">
+//             {event.type}
+//           </p>
+//         </div>
+//         <StatusBadge status={event.status} />
+//       </div>
+//       <div className="h-1 rounded-full bg-[--color-bg-base] overflow-hidden">
+//         <div
+//           className="h-full bg-[--color-brand-primary-500] rounded-full"
+//           style={{ width: `${progress}%` }}
+//         />
+//       </div>
+//       <div className="flex justify-between text-xs mt-1.5">
+//         <span className="text-[--color-brand-primary-500] font-medium">
+//           {fmt(event.collectedAmount)}
+//         </span>
+//         <span className="text-[--color-text-muted]">
+//           of {fmt(event.targetAmount)}
+//         </span>
+//       </div>
+//     </li>
+//   );
+// }
+
+// function CircleRow({ circle, fmt, navigate }) {
+//   const typeLabel = {
+//     ajo: "Ajo / Esusu",
+//     welfare: "Welfare",
+//     trip: "Group Trip",
+//     project: "Project",
+//     levy: "Levy",
+//   };
+//   return (
+//     <li
+//       onClick={() => navigate(`/circles/${circle._id}`)}
+//       className="bg-[--color-bg-card] rounded-xl border border-[--color-border-light] px-4 py-3.5 cursor-pointer hover:shadow-[--shadow-soft] transition-all hover:-translate-y-0.5 flex items-center justify-between"
+//     >
+//       <div>
+//         <p className="text-[--color-text-primary] text-sm font-semibold">
+//           {circle.name}
+//         </p>
+//         <p className="text-[--color-text-muted] text-xs mt-0.5">
+//           {typeLabel[circle.type] ?? circle.type} ·{" "}
+//           {circle.members?.length ?? 0} members
+//         </p>
+//       </div>
+//       <div className="text-right">
+//         <p className="text-[--color-text-primary] text-sm font-bold">
+//           {fmt(circle.escrowBalance)}
+//         </p>
+//         <p className="text-[--color-text-muted] text-xs">in escrow</p>
+//       </div>
+//     </li>
+//   );
+// }
