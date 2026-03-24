@@ -10,6 +10,7 @@ const mockCircles = [
 const USE_MOCK = import.meta.env.VITE_USE_MOCK === "true";
 
 export const getCircles = () => {
+  console.log(USE_MOCK);
   if (USE_MOCK) {
     return new Promise((resolve) => {
       setTimeout(() => resolve({ data: mockCircles }), 500); // simulate network delay

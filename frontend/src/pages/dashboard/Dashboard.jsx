@@ -47,7 +47,7 @@ export default function Dashboard() {
   if (loading) return <Loading />;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 px-3 mt-2">
       {/* Welcome Section */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
@@ -107,7 +107,7 @@ export default function Dashboard() {
           
           {circles.length === 0 ? (
             <div className="text-center py-8 bg-gray-50 rounded-lg">
-              <p className="text-gray-500">You haven't joined any circles yet.</p>
+              <p className="text-gray-500">You haven&apos;t joined any circles yet.</p>
               <Link
                 to="/create-circle"
                 className="text-pink-600 font-medium mt-2 inline-block hover:underline"
