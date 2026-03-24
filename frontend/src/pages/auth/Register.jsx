@@ -38,7 +38,7 @@ export default function Register() {
 
     try {
       const res = await register(form);
-      setAuth(res.data);
+      setAuth(res);
       navigate("/");
     } catch (err) {
       console.error(err);
