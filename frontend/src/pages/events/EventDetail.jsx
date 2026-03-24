@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { getEvent } from "../../api/events.api";
-import { HiArrowLeft, HiOutlineFlag, HiCurrencyDollar, HiHand, HiCalendar } from "react-icons/hi";
+import { HiArrowLeft, HiCurrencyDollar, HiHand, HiCalendar } from "react-icons/hi";
 import Loading from "../../components/common/Loading";
 
 export default function EventDetail() {
@@ -35,7 +35,7 @@ export default function EventDetail() {
       </div>
 
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-        <div className="h-32 bg-gradient-to-r from-pink-500 to-red-500 relative"></div>
+        <div className="h-32 bg-linear-to-r from-pink-500 to-red-500 relative"></div>
         <div className="px-8 pb-8">
           <div className="relative -mt-10 mb-4 bg-white rounded-xl p-6 shadow-sm border border-gray-100">
             <div className="flex flex-col md:flex-row md:items-start justify-between gap-4">
@@ -56,7 +56,7 @@ export default function EventDetail() {
                    {event.createdAt && ` • Founded on ${new Date(event.createdAt).toLocaleDateString()}`}
                 </p>
               </div>
-              <div className="flex-shrink-0">
+              <div className="shrink-0">
                  {event.status === 'open' && (
                   <Link to={`/contribute/${event._id}`}>
                     <button className="flex items-center gap-2 bg-pink-600 text-white px-6 py-3 rounded-lg hover:bg-pink-700 transition font-semibold shadow-md hover:shadow-lg transform hover:-translate-y-0.5">
@@ -77,7 +77,7 @@ export default function EventDetail() {
               </div>
               <div className="w-full bg-gray-100 rounded-full h-3 overflow-hidden">
                 <div
-                  className="bg-gradient-to-r from-pink-500 to-red-500 h-full rounded-full transition-all duration-500 ease-out"
+                  className="bg-linear-to-r from-pink-500 to-red-500 h-full rounded-full transition-all duration-500 ease-out"
                   style={{ width: `${percent}%` }}
                 />
               </div>

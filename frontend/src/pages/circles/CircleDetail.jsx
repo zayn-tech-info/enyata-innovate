@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { getCircle } from "../../api/circles.api";
 import { useCircleStore } from "../../store/circle.store";
 import {
@@ -22,7 +22,17 @@ export default function CircleDetail() {
     setLoading(true);
     getCircle(id)
       .then((res) => setCurrentCircle(res.data))
-      .catch((err) => console.error(err))
+      .catch((err) => {
+        console.error(err)
+        setCurrentCircle({
+          _id: "1",
+          name: "First One",
+          membersCount: 4,
+          escrowBalance: 10000,
+          type: "Welfare",
+          description: "Good description"
+        });
+      })
       .finally(() => setLoading(false));
   }, [id, setCurrentCircle]);
 
@@ -32,7 +42,7 @@ export default function CircleDetail() {
     <div className="space-y-6">
       {/* Header Card */}
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-        <div className="h-32 bg-gradient-to-r from-purple-500 to-pink-500 relative">
+        <div className="h-32 bg-linear-to-r from-purple-500 to-pink-500 relative">
           <div className="absolute -bottom-10 left-8">
             <div className="w-24 h-24 rounded-xl bg-white p-1 shadow-lg">
               <div className="w-full h-full rounded-lg bg-gray-100 flex items-center justify-center text-3xl font-bold text-gray-400">

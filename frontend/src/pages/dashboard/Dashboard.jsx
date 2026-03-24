@@ -19,16 +19,44 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    console.log(`User: ${JSON.stringify(user)}`)
     const fetchData = async () => {
       try {
         const [circlesRes, eventsRes] = await Promise.all([
           getCircles(),
           getEvents(),
         ]);
-        setCircles(Array.isArray(circlesRes.data) ? circlesRes.data : []);
+        console.log(`Circle: ${Array.isArray(circlesRes.data)}`);
+        setCircles(
+          Array.isArray(circlesRes.data)
+            ? circlesRes.data
+            : [
+                {
+                  _id: "1",
+                  name: "First One",
+                  membersCount: 4,
+                  escrowBalance: 10000,
+                  type: "Welfare"
+                },
+              ],
+        );
         setEvents(Array.isArray(eventsRes.data) ? eventsRes.data : []);
       } catch (err) {
+        setCircles([
+          {
+            _id: "1",
+            name: "First One",
+            membersCount: 4,
+            escrowBalance: 10000,
+            type: "Welfare",
+          },
+          {
+            _id: "1",
+            name: "Second One",
+            membersCount: 4,
+            escrowBalance: 50000,
+            type: "Welfare",
+          },
+        ]);
         console.error("Dashboard load error:", err);
       } finally {
         setLoading(false);

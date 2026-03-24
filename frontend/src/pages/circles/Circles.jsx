@@ -13,15 +13,33 @@ export default function Circles() {
     getCircles()
       .then((res) => {
         console.log("Setting circles");
-        setCircles(res.data ?? [])
+        setCircles(res.data ?? []);
         console.log(`Setting circles ${res.data}`);
+      })
+      .catch((err) => {
+        console.error(err)
+        setCircles([
+          {
+            _id: "1",
+            name: "First One",
+            membersCount: 4,
+            escrowBalance: 10000,
+            type: "Welfare",
+          },
+          {
+            _id: "1",
+            name: "Second One",
+            membersCount: 4,
+            escrowBalance: 50000,
+            type: "Welfare",
+          },
+        ]);
   })
-      .catch((err) => console.error(err))
       .finally(() => setLoading(false));
   }, []);
 
   const filteredCircles = circles.filter((c) =>
-    c.name.toLowerCase().includes(searchTerm.toLowerCase())
+    c.name.toLowerCase().includes(searchTerm.toLowerCase()),
   );
 
   if (loading) return <Loading />;
@@ -62,7 +80,9 @@ export default function Circles() {
           <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4 text-gray-400">
             <HiUsers size={32} />
           </div>
-          <h3 className="text-lg font-medium text-gray-900">No circles found</h3>
+          <h3 className="text-lg font-medium text-gray-900">
+            No circles found
+          </h3>
           <p className="text-gray-500 mt-1 mb-6">
             {searchTerm
               ? `No circles match "${searchTerm}"`
@@ -94,15 +114,17 @@ export default function Circles() {
                     {c.type}
                   </span>
                 </div>
-                
+
                 <h3 className="text-lg font-bold text-gray-900 mb-1 truncate group-hover:text-pink-600 transition-colors">
                   {c.name}
                 </h3>
-                
+
                 <div className="space-y-3 mt-4 pt-4 border-t border-gray-100">
                   <div className="flex justify-between items-center text-sm">
                     <span className="text-gray-500">Balance</span>
-                    <span className="font-bold text-gray-900">₦{c.escrowBalance?.toLocaleString() || 0}</span>
+                    <span className="font-bold text-gray-900">
+                      ₦{c.escrowBalance?.toLocaleString() || 0}
+                    </span>
                   </div>
                   <div className="flex justify-between items-center text-sm">
                     <span className="text-gray-500">Members</span>
