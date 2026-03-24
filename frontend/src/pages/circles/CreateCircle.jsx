@@ -1,11 +1,12 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { createCircle } from "../../api/circles.api";
-import { HiPlus, HiArrowLeft } from "react-icons/hi";
+import { HiArrowLeft } from "react-icons/hi";
 
 export default function CreateCircle() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("")
   const [form, setForm] = useState({
     name: "",
     description: "",
@@ -16,14 +17,16 @@ export default function CreateCircle() {
   });
 
   const handleChange = (e) => {
+    setError("")
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
   };
-
+  
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError("")
     if (!form.name || !form.contributionAmount) {
-      alert("Please fill in all required fields.");
+      setError("Please fill in all required fields.");
       return;
     }
 
@@ -45,7 +48,7 @@ export default function CreateCircle() {
       navigate("/circles");
     } catch (err) {
       console.error(err);
-      alert("Failed to create circle. Please try again.");
+      setError("Failed to create circle. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -69,11 +72,39 @@ export default function CreateCircle() {
       </div>
 
       {/* Form */}
-      <form onSubmit={handleSubmit} className="bg-white shadow-sm rounded-xl p-6 sm:p-8 space-y-6 border border-gray-100">
-        
+      <form
+        onSubmit={handleSubmit}
+        className="bg-white shadow-sm rounded-xl p-6 sm:p-8 space-y-6 border border-gray-100"
+      >
+        {error && (
+          <div className="bg-red-50 border-l-4 border-red-500 p-4 mb-4 rounded-md">
+            <div className="flex">
+              <div className="shrink-0">
+                <svg
+                  className="h-5 w-5 text-red-400"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+              </div>
+              <div className="ml-3">
+                <p className="text-sm text-red-700">{error}</p>
+              </div>
+            </div>
+          </div>
+        )}
         {/* Circle Name */}
         <div>
-          <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
+          <label
+            htmlFor="name"
+            className="block text-sm font-medium text-gray-700 mb-1"
+          >
             Circle Name <span className="text-red-500">*</span>
           </label>
           <input
@@ -90,7 +121,10 @@ export default function CreateCircle() {
 
         {/* Description */}
         <div>
-          <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-1">
+          <label
+            htmlFor="description"
+            className="block text-sm font-medium text-gray-700 mb-1"
+          >
             Description
           </label>
           <textarea
@@ -107,7 +141,10 @@ export default function CreateCircle() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Type */}
           <div>
-            <label htmlFor="type" className="block text-sm font-medium text-gray-700 mb-1">
+            <label
+              htmlFor="type"
+              className="block text-sm font-medium text-gray-700 mb-1"
+            >
               Circle Type
             </label>
             <select
@@ -127,7 +164,10 @@ export default function CreateCircle() {
 
           {/* Frequency */}
           <div>
-            <label htmlFor="frequency" className="block text-sm font-medium text-gray-700 mb-1">
+            <label
+              htmlFor="frequency"
+              className="block text-sm font-medium text-gray-700 mb-1"
+            >
               Contribution Frequency
             </label>
             <select
@@ -148,7 +188,10 @@ export default function CreateCircle() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Contribution Amount */}
           <div>
-            <label htmlFor="contributionAmount" className="block text-sm font-medium text-gray-700 mb-1">
+            <label
+              htmlFor="contributionAmount"
+              className="block text-sm font-medium text-gray-700 mb-1"
+            >
               Contribution Amount (₦) <span className="text-red-500">*</span>
             </label>
             <div className="relative rounded-md shadow-sm">
@@ -171,7 +214,10 @@ export default function CreateCircle() {
 
           {/* Quorum Threshold */}
           <div>
-            <label htmlFor="quorumThreshold" className="block text-sm font-medium text-gray-700 mb-1">
+            <label
+              htmlFor="quorumThreshold"
+              className="block text-sm font-medium text-gray-700 mb-1"
+            >
               Approval Quorum
             </label>
             <input

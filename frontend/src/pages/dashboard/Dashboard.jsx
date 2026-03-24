@@ -19,6 +19,7 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    console.log(`User: ${JSON.stringify(user)}`)
     const fetchData = async () => {
       try {
         const [circlesRes, eventsRes] = await Promise.all([
